@@ -77,6 +77,7 @@ app.get('/profile', (req, res) => {
   }
 })
 
+//logout
 app.post('/logout', (req, res) => {
   res.clearCookie('token').json({ message: 'Logged out' })
 })
