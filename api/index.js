@@ -61,7 +61,7 @@ app.post('/login', async (req, res) => {
     }
   )
 })
-
+//get user profile name, email and id then pass it to the userContext
 app.get('/profile', (req, res) => {
   const { token } = req.cookies
   if (token) {
@@ -75,6 +75,10 @@ app.get('/profile', (req, res) => {
   } else {
     res.status(401).json({ error: 'Unauthorized' })
   }
+})
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('token').json({ message: 'Logged out' })
 })
 
 app.listen(3000, () => {
