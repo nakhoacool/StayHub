@@ -10,6 +10,7 @@ const multer = require('multer')
 const app = express()
 
 const UserModel = require('./models/User')
+const PlaceModel = require('./models/Place')
 
 app.use(express.json())
 app.use(cookieParser())
@@ -106,6 +107,42 @@ const upload = multer({ storage })
 app.post('/upload-by-file', upload.array('photo'), (req, res) => {
   const filenames = req.files.map((file) => file.filename)
   res.json(filenames)
+})
+
+//add places
+app.post('/add-place', async (req, res) => {
+  const { token } = req.cookies
+
+  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
+    if (!err) {
+      const {
+        title,
+        address,
+        photos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+      } = req.body
+      const place = await PlaceModel.create({
+        owner: decoded.id,
+        title,
+        address,
+        photos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+      })
+      res.json(place)
+    } else {
+      res.status(401).json({ error: 'Unauthorized' })
+    }
+  })
 })
 
 app.listen(3000, () => {
