@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-export default function PhotosUploader({ photos, setPhotos}) {
+export default function PhotosUploader({ photos, setPhotos }) {
   const [photoLink, setPhotoLink] = useState('')
   async function addPhotoByLink(ev) {
     ev.preventDefault()
@@ -46,9 +46,8 @@ export default function PhotosUploader({ photos, setPhotos}) {
       <div className='mt-2 grid gap-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-6'>
         {photos.length > 0 &&
           photos.map((link, index) => (
-            <div className='h-32 flex'>
+            <div className='h-32 flex' key={index}>
               <img
-                key={index}
                 className='rounded-2xl w-full h-full object-cover'
                 src={`http://localhost:3000/uploads/${link}`}
               />
