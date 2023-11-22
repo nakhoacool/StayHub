@@ -131,19 +131,19 @@ export default function PlaceFormPage() {
           <div>
             <h3 className='mt-2 -mb-1'>Check in time</h3>
             <input
-              type='text'
+              type='number'
               value={checkIn}
               onChange={(ev) => setCheckIn(ev.target.value)}
-              placeholder='14:00'
+              placeholder='14'
             />
           </div>
           <div>
             <h3 className='mt-2 -mb-1'>Check out time</h3>
             <input
-              type='text'
+              type='number'
               value={checkOut}
               onChange={(ev) => setCheckOut(ev.target.value)}
-              placeholder='20:00'
+              placeholder='20'
             />
           </div>
           <div>
