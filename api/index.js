@@ -109,6 +109,29 @@ app.post('/upload-by-file', upload.array('photo'), (req, res) => {
   res.json(filenames)
 })
 
+//get places
+app.get('/get-places', async (req, res) => {
+  const { token } = req.cookies
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
+      if (!err) {
+        const places = await PlaceModel.find({ owner: decoded.id })
+        res.json(places)
+      } else {
+        res.status(401).json({ error: 'Unauthorized' })
+      }
+    })
+  } else {
+    res.status(401).json({ error: 'Unauthorized' })
+  }
+})
+
+//get place by id
+app.get('/get-place/:id', async (req, res) => {
+  const { id } = req.params
+  res.json(await PlaceModel.findById(id))
+})
+
 //add places
 app.post('/add-place', async (req, res) => {
   const { token } = req.cookies
@@ -143,6 +166,34 @@ app.post('/add-place', async (req, res) => {
       res.status(401).json({ error: 'Unauthorized' })
     }
   })
+})
+
+//update place
+app.put('/update-place/:id', async (req, res) => {
+  const { id } = req.params
+  const {
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+  } = req.body
+  const place = await PlaceModel.findById(id)
+  place.title = title
+  place.address = address
+  place.photos = photos
+  place.description = description
+  place.perks = perks
+  place.extraInfo = extraInfo
+  place.checkIn = checkIn
+  place.checkOut = checkOut
+  place.maxGuests = maxGuests
+  await place.save()
+  res.json(place)
 })
 
 app.listen(3000, () => {

@@ -27,6 +27,11 @@ export default function PhotosUploader({ photos, setPhotos }) {
         setPhotos((prev) => [...prev, ...data])
       })
   }
+
+  function removePhoto(index) {
+    setPhotos((prev) => [...prev.filter((_, i) => i !== index)])
+  }
+
   return (
     <>
       <div className='flex gap-2'>
@@ -48,8 +53,9 @@ export default function PhotosUploader({ photos, setPhotos }) {
           photos.map((link, index) => (
             <div className='h-32 flex' key={index}>
               <img
-                className='rounded-2xl w-full h-full object-cover'
+                className='rounded-2xl w-full h-full object-cover cursor-pointer'
                 src={`http://localhost:3000/uploads/${link}`}
+                onClick={() => removePhoto(index)}
               />
             </div>
           ))}
