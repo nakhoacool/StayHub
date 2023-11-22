@@ -148,6 +148,7 @@ app.post('/add-place', async (req, res) => {
         checkIn,
         checkOut,
         maxGuests,
+        price,
       } = req.body
       const place = await PlaceModel.create({
         owner: decoded.id,
@@ -160,6 +161,7 @@ app.post('/add-place', async (req, res) => {
         checkIn,
         checkOut,
         maxGuests,
+        price,
       })
       res.json(place)
     } else {
@@ -184,6 +186,7 @@ app.put('/update-place/', async (req, res) => {
         checkIn,
         checkOut,
         maxGuests,
+        price,
       } = req.body
       const place = await PlaceModel.findByIdAndUpdate(
         id,
@@ -198,6 +201,7 @@ app.put('/update-place/', async (req, res) => {
           checkIn,
           checkOut,
           maxGuests,
+          price
         },
         { new: true }
       )
@@ -206,6 +210,12 @@ app.put('/update-place/', async (req, res) => {
       res.status(401).json({ error: 'Unauthorized' })
     }
   })
+})
+
+//get all places
+app.get('/places', async(req,res) =>{
+  const places = await PlaceModel.find()
+  res.json(places)
 })
 
 app.listen(3000, () => {
