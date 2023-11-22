@@ -169,31 +169,43 @@ app.post('/add-place', async (req, res) => {
 })
 
 //update place
-app.put('/update-place/:id', async (req, res) => {
-  const { id } = req.params
-  const {
-    title,
-    address,
-    photos,
-    description,
-    perks,
-    extraInfo,
-    checkIn,
-    checkOut,
-    maxGuests,
-  } = req.body
-  const place = await PlaceModel.findById(id)
-  place.title = title
-  place.address = address
-  place.photos = photos
-  place.description = description
-  place.perks = perks
-  place.extraInfo = extraInfo
-  place.checkIn = checkIn
-  place.checkOut = checkOut
-  place.maxGuests = maxGuests
-  await place.save()
-  res.json(place)
+app.put('/update-place/', async (req, res) => {
+  const { token } = req.cookies
+  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
+    if (!err) {
+      const {
+        id,
+        title,
+        address,
+        photos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+      } = req.body
+      const place = await PlaceModel.findByIdAndUpdate(
+        id,
+        {
+          owner: decoded.id,
+          title,
+          address,
+          photos,
+          description,
+          perks,
+          extraInfo,
+          checkIn,
+          checkOut,
+          maxGuests,
+        },
+        { new: true }
+      )
+      res.json(place)
+    } else {
+      res.status(401).json({ error: 'Unauthorized' })
+    }
+  })
 })
 
 app.listen(3000, () => {

@@ -53,31 +53,26 @@ export default function PlaceFormPage() {
 
   async function addNewPlace(ev) {
     ev.preventDefault()
+    const placeData = {
+      title,
+      address,
+      photos,
+      description,
+      perks,
+      extraInfo,
+      checkIn,
+      checkOut,
+      maxGuests,
+    }
     if (id) {
-      await axios.put('/update-place/' + id, {
-        title,
-        address,
-        photos,
-        description,
-        perks,
-        extraInfo,
-        checkIn,
-        checkOut,
-        maxGuests,
+      //update
+      await axios.put('/update-place/', {
+        id,
+        ...placeData,
       })
       setRedirect(true)
     } else {
-      const placeData = {
-        title,
-        address,
-        photos,
-        description,
-        perks,
-        extraInfo,
-        checkIn,
-        checkOut,
-        maxGuests,
-      }
+      //add
       await axios.post('/add-place', placeData)
       setRedirect(true)
     }
