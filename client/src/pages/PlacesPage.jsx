@@ -41,6 +41,22 @@ export default function PlacesPage() {
     setPhotoLink('')
   }
 
+  function uploadPhoto(ev) {
+    ev.preventDefault()
+    const formData = new FormData()
+    for (let i = 0; i < ev.target.files.length; i++) {
+      formData.append('photo', ev.target.files[i])
+    }
+    axios
+      .post('/upload-by-file', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(({ data }) => {
+        setPhotos((prev) => [...prev, ...data])
+      })
+  }
   return (
     <div>
       {action !== 'new' && (
@@ -104,12 +120,22 @@ export default function PlacesPage() {
             </div>
             <div className='mt-2 grid gap-2 grid-cols-3 md:grid-cols-4 lg:grid-cols-6'>
               {photos.length > 0 &&
-                photos.map((link) => (
+                photos.map((link, index) => (
                   <div>
-                    <img className='rounded-2xl' src={'http://localhost:3000/uploads/' + link} />
+                    <img
+                      key={index}
+                      className='rounded-2xl'
+                      src={`http://localhost:3000/uploads/${link}`}
+                    />
                   </div>
                 ))}
-              <button className='flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-2xl text-gray-600'>
+              <label className='cursor-pointer flex items-center gap-1 justify-center border bg-transparent rounded-2xl p-2 text-2xl text-gray-600'>
+                <input
+                  type='file'
+                  multiple
+                  className='hidden'
+                  onChange={uploadPhoto}
+                />
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -125,7 +151,7 @@ export default function PlacesPage() {
                   />
                 </svg>
                 Upload
-              </button>
+              </label>
             </div>
             {preInput('Description', 'Describe your place to guests')}
             <textarea

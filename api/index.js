@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const imageDownloader = require('image-downloader')
+const multer = require('multer')
 const app = express()
 
 const UserModel = require('./models/User')
@@ -83,6 +84,7 @@ app.post('/logout', (req, res) => {
   res.clearCookie('token').json({ message: 'Logged out' })
 })
 
+//upload image by link
 app.post('/upload-by-link', async (req, res) => {
   const { link } = req.body
   const newName = 'photo' + Date.now() + '.jpg'
@@ -91,6 +93,19 @@ app.post('/upload-by-link', async (req, res) => {
     dest: __dirname + '/uploads/' + newName,
   })
   res.json(newName)
+})
+
+//upload image by file
+const storage = multer.diskStorage({
+  destination: __dirname + '/uploads/',
+  filename: (req, file, cb) => {
+    cb(null, 'photo' + Date.now() + '.jpg')
+  },
+})
+const upload = multer({ storage })
+app.post('/upload-by-file', upload.array('photo'), (req, res) => {
+  const filenames = req.files.map((file) => file.filename)
+  res.json(filenames)
 })
 
 app.listen(3000, () => {
