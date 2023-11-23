@@ -1,4 +1,34 @@
+import { useState } from 'react'
+import { differenceInCalendarDays } from 'date-fns'
+import axios from 'axios'
+
 export default function Booking({ placeData }) {
+  const [checkIn, setCheckIn] = useState('')
+  const [checkOut, setCheckOut] = useState('')
+  const [guests, setGuests] = useState(1)
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+
+  let numberOfNights = 0
+  if (checkIn && checkOut) {
+    numberOfNights = differenceInCalendarDays(
+      new Date(checkOut),
+      new Date(checkIn)
+    )
+  }
+
+  async function bookThisPlace() {
+    const data = {
+      checkIn,
+      checkOut,
+      guests,
+      name,
+      phone,
+      place: placeData.id,
+      price: numberOfNights * placeData.price,
+    }
+    await axios.post('/book-place', data)
+  }
   return (
     <div className='bg-white shadow p-4 rounded-2xl'>
       <div className='text-2xl text-center'>
@@ -8,19 +38,50 @@ export default function Booking({ placeData }) {
         <div className='flex'>
           <div className='py-3 px-4'>
             <label>Check in:</label>
-            <input type='date' />
+            <input
+              type='date'
+              value={checkIn}
+              onChange={(ev) => setCheckIn(ev.target.value)}
+            />
           </div>
           <div className='py-3 px-4 border-l'>
             <label>Check out:</label>
-            <input type='date' />
+            <input
+              type='date'
+              value={checkOut}
+              onChange={(ev) => setCheckOut(ev.target.value)}
+            />
           </div>
         </div>
         <div className='py-3 px-4 border-t'>
           <label>Number of guest:</label>
-          <input type='number' value={1} />
+          <input
+            type='number'
+            value={guests}
+            onChange={(ev) => setGuests(ev.target.value)}
+          />
         </div>
+        {numberOfNights > 0 && (
+          <div className='py-3 px-4 border-t'>
+            <label>Your full name:</label>
+            <input
+              type='text'
+              value={name}
+              onChange={(ev) => setName(ev.target.value)}
+            />
+            <label>Your phone:</label>
+            <input
+              type='tel'
+              value={phone}
+              onChange={(ev) => setPhone(ev.target.value)}
+            />
+          </div>
+        )}
       </div>
-      <button className='primary mt-4'>Book this place</button>
+      <button onClick={bookThisPlace} className='primary mt-4'>
+        Book this place{' '}
+        {numberOfNights > 0 && <span>${numberOfNights * placeData.price}</span>}
+      </button>
     </div>
   )
 }

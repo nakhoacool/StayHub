@@ -11,6 +11,7 @@ const app = express()
 
 const UserModel = require('./models/User')
 const PlaceModel = require('./models/Place')
+const BookingModel = require('./models/Booking')
 
 app.use(express.json())
 app.use(cookieParser())
@@ -201,7 +202,7 @@ app.put('/update-place/', async (req, res) => {
           checkIn,
           checkOut,
           maxGuests,
-          price
+          price,
         },
         { new: true }
       )
@@ -213,9 +214,24 @@ app.put('/update-place/', async (req, res) => {
 })
 
 //get all places
-app.get('/places', async(req,res) =>{
+app.get('/places', async (req, res) => {
   const places = await PlaceModel.find()
   res.json(places)
+})
+
+app.post('/book-place', (req, res) => {
+  const { place, checkIn, checkOut, guests, name, phone, price } = req.body
+  BookingModel.create({
+    place,
+    checkIn,
+    checkOut,
+    guests,
+    name,
+    phone,
+    price,
+  })
+    .then((booking) => res.json(booking))
+    .catch((err) => res.status(422).json(err))
 })
 
 app.listen(3000, () => {
