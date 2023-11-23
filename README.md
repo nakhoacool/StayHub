@@ -4,7 +4,7 @@ This project is a simplified clone of Airbnb, built using the MERN stack (MongoD
 
 ## Features
 
-- User authentication
+- User authentication with JWT
 - Users can list their places with details like title, address, photos, description, perks, extra info, check-in and check-out times, maximum guests, and price.
 - Users can update their listed places.
 - Users can view all listed places.
