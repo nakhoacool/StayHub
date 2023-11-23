@@ -33,7 +33,10 @@ export default function BookingsPage() {
               <div className='py-3 pr-3 grow'>
                 <h2 className='text-xl'>{booking.place.title}</h2>
                 <div className='text-xl'>
-                  <BookingDates booking={booking} />
+                  <BookingDates
+                    booking={booking}
+                    className='mb-2 mt-4 text-gray-500'
+                  />
                   <div className='flex gap-1'>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
