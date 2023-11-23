@@ -220,7 +220,7 @@ app.post('/book-place', verifyToken, async (req, res) => {
 //get bookings
 app.get('/get-bookings', verifyToken, async (req, res) => {
   const userData = req.user
-  const bookings = await BookingModel.find({ user: userData.id })
+  const bookings = await BookingModel.find({ user: userData.id }).populate('place')
   res.json(bookings)
 })
 
