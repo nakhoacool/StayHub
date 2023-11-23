@@ -25,6 +25,23 @@ app.use(
 //connect to db
 mongoose.connect(process.env.MONGO_URL)
 
+//function to verify token and pass it to next middleware
+function verifyToken(req, res, next) {
+  const { token } = req.cookies
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, {}, (err, decoded) => {
+      if (!err) {
+        req.user = decoded
+        next()
+      } else {
+        res.status(401).json({ error: 'Unauthorized' })
+      }
+    })
+  } else {
+    res.status(401).json({ error: 'Unauthorized' })
+  }
+}
+
 //register
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body
@@ -65,20 +82,10 @@ app.post('/login', async (req, res) => {
     }
   )
 })
+
 //get user profile name, email and id then pass it to the userContext
-app.get('/profile', (req, res) => {
-  const { token } = req.cookies
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, {}, (err, decoded) => {
-      if (!err) {
-        res.json(decoded)
-      } else {
-        res.status(401).json({ error: 'Unauthorized' })
-      }
-    })
-  } else {
-    res.status(401).json({ error: 'Unauthorized' })
-  }
+app.get('/profile', verifyToken, (req, res) => {
+  res.json(req.user)
 })
 
 //logout
@@ -111,20 +118,9 @@ app.post('/upload-by-file', upload.array('photo'), (req, res) => {
 })
 
 //get places
-app.get('/get-places', async (req, res) => {
-  const { token } = req.cookies
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
-      if (!err) {
-        const places = await PlaceModel.find({ owner: decoded.id })
-        res.json(places)
-      } else {
-        res.status(401).json({ error: 'Unauthorized' })
-      }
-    })
-  } else {
-    res.status(401).json({ error: 'Unauthorized' })
-  }
+app.get('/get-places', verifyToken, async (req, res) => {
+  const places = await PlaceModel.find({ owner: req.user.id })
+  res.json(places)
 })
 
 //get place by id
@@ -134,83 +130,68 @@ app.get('/get-place/:id', async (req, res) => {
 })
 
 //add places
-app.post('/add-place', async (req, res) => {
-  const { token } = req.cookies
-
-  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
-    if (!err) {
-      const {
-        title,
-        address,
-        photos,
-        description,
-        perks,
-        extraInfo,
-        checkIn,
-        checkOut,
-        maxGuests,
-        price,
-      } = req.body
-      const place = await PlaceModel.create({
-        owner: decoded.id,
-        title,
-        address,
-        photos,
-        description,
-        perks,
-        extraInfo,
-        checkIn,
-        checkOut,
-        maxGuests,
-        price,
-      })
-      res.json(place)
-    } else {
-      res.status(401).json({ error: 'Unauthorized' })
-    }
+app.post('/add-place', verifyToken, async (req, res) => {
+  const {
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+    price,
+  } = req.body
+  const place = await PlaceModel.create({
+    owner: req.user.id,
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+    price,
   })
+  res.json(place)
 })
 
 //update place
-app.put('/update-place/', async (req, res) => {
-  const { token } = req.cookies
-  jwt.verify(token, process.env.JWT_SECRET, {}, async (err, decoded) => {
-    if (!err) {
-      const {
-        id,
-        title,
-        address,
-        photos,
-        description,
-        perks,
-        extraInfo,
-        checkIn,
-        checkOut,
-        maxGuests,
-        price,
-      } = req.body
-      const place = await PlaceModel.findByIdAndUpdate(
-        id,
-        {
-          owner: decoded.id,
-          title,
-          address,
-          photos,
-          description,
-          perks,
-          extraInfo,
-          checkIn,
-          checkOut,
-          maxGuests,
-          price,
-        },
-        { new: true }
-      )
-      res.json(place)
-    } else {
-      res.status(401).json({ error: 'Unauthorized' })
-    }
-  })
+app.put('/update-place/', verifyToken, async (req, res) => {
+  const {
+    id,
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+    price,
+  } = req.body
+  const place = await PlaceModel.findByIdAndUpdate(
+    id,
+    {
+      owner: req.user.id,
+      title,
+      address,
+      photos,
+      description,
+      perks,
+      extraInfo,
+      checkIn,
+      checkOut,
+      maxGuests,
+      price,
+    },
+    { new: true }
+  )
+  res.json(place)
 })
 
 //get all places
@@ -219,10 +200,13 @@ app.get('/places', async (req, res) => {
   res.json(places)
 })
 
-app.post('/book-place', (req, res) => {
+//book a place
+app.post('/book-place', verifyToken, async (req, res) => {
   const { place, checkIn, checkOut, guests, name, phone, price } = req.body
-  BookingModel.create({
+  const userData = req.user
+  const booking = await BookingModel.create({
     place,
+    user: userData.id,
     checkIn,
     checkOut,
     guests,
@@ -230,8 +214,14 @@ app.post('/book-place', (req, res) => {
     phone,
     price,
   })
-    .then((booking) => res.json(booking))
-    .catch((err) => res.status(422).json(err))
+  res.json(booking)
+})
+
+//get bookings
+app.get('/get-bookings', verifyToken, async (req, res) => {
+  const userData = req.user
+  const bookings = await BookingModel.find({ user: userData.id })
+  res.json(bookings)
 })
 
 app.listen(3000, () => {

@@ -6,8 +6,8 @@ import axios from 'axios'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [redirect, setRedirect] = useState(false)
-  const {setUser} = useContext(UserContext)
+  const [redirect, setRedirect] = useState('')
+  const { setUser } = useContext(UserContext)
   async function loginUser(ev) {
     ev.preventDefault()
     try {
@@ -16,14 +16,14 @@ export default function LoginPage() {
         password,
       })
       setUser(response.data)
-      setRedirect(true)
+      setRedirect('/')
     } catch (error) {
       alert('Login failed')
     }
   }
 
   if (redirect) {
-    return <Navigate to={'/'} />
+    return <Navigate to={redirect} />
   }
 
   return (

@@ -164,7 +164,7 @@ export default function PlaceFormPage() {
               type='number'
               value={price}
               onChange={(ev) => setPrice(ev.target.value)}
-              placeholder='100$'
+              placeholder='$100'
             />
           </div>
         </div>

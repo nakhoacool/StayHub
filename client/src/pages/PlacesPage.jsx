@@ -42,10 +42,18 @@ export default function PlacesPage() {
         )}
         {places.length > 0 &&
           places.map((place) => (
-            <Link to={'/account/places/' + place._id} className='flex gap-4 bg-gray-100 p-4 rounded-2xl cursor-pointer'>
+            <Link
+              key={place._id}
+              to={'/account/places/' + place._id}
+              className='flex gap-4 bg-gray-100 p-4 rounded-2xl cursor-pointer'
+            >
               <div className='flex w-32 h-32 object-cover rounded-2xl bg-gray-300 grow shrink-0'>
                 {place.photos.length > 0 && (
-                  <img className='object-cover' src={'http://localhost:3000/uploads/'+place.photos[0]} alt={place.title} />
+                  <img
+                    className='object-cover'
+                    src={'http://localhost:3000/uploads/' + place.photos[0]}
+                    alt={place.title}
+                  />
                 )}
               </div>
               <div className='grow-0 shrink'>
