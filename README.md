@@ -1,6 +1,6 @@
-# Airbnb Clone - MERN Stack with Vite
+# Airbnb Clone - MERN Stack with Vite and Docker
 
-This project is a simplified clone of Airbnb, built using the MERN stack (MongoDB, Express.js, React.js, Node.js). It provides a platform for users to list their places for rent and for guests to book them.
+This project is a simplified clone of Airbnb, built using the MERN stack (MongoDB, Express.js, React.js, Node.js) and build a docker container for devops practices.
 
 ## Features
 
@@ -32,6 +32,30 @@ JWT_SECRET=<your_jwt_secret>
 4. Run `npm run dev` to start the server.
 5. Navigate to the `client/` directory and run `npm install` to install the client dependencies.
 6. Run `npm run dev` to start the client with Vite.
+
+## Docker Setup and Installation
+
+1. Make sure Docker and Docker Compose are installed on your machine. If not, you can download them from [Docker's official website](https://www.docker.com/products/docker-desktop).
+
+2. Clone the repository.
+
+3. Build and run the Docker containers using Docker Compose. Navigate to the root directory of the project where the `docker-compose.yml` file is located and run the following command:
+
+```sh
+docker-compose up --build
+```
+
+This command will build the Docker images for the api, client, and mongo services defined in the docker-compose.yml file, and then start the containers.
+
+4. The API server will be running at http://localhost:3000 and the client will be running at http://localhost:5173.
+
+5. To stop the containers, run the following command:
+
+```sh
+docker-compose down
+```
+
+Please note that the MongoDB data is not persistent and will be lost when the mongo container is stopped. If you want to make the data persistent, you can add a volume for the MongoDB data in the docker-compose.yml file.
 
 ## Screenshots
 <table>
