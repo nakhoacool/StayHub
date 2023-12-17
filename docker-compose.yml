@@ -6,7 +6,8 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./api:/usr/src/app
+      - ./api:/usr/src/api
+      - /usr/src/api/node_modules
     environment:
       - MONGO_URL=mongodb://mongo:27017/airbnb
       - JWT_SECRET=airbnb
@@ -18,7 +19,8 @@ services:
     ports:
       - 5173:5173
     volumes:
-      - ./client:/usr/src/app
+      - ./client:/usr/src/client
+      - /usr/src/client/node_modules
   mongo:
     image: mongo
     ports:
