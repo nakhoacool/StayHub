@@ -1,0 +1,25 @@
+version: '3'
+services:
+  api:
+    container_name: airbnb-api
+    build: ./api
+    ports:
+      - 3000:3000
+    volumes:
+      - ./api:/usr/src/app
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/airbnb
+      - JWT_SECRET=airbnb
+    depends_on:
+      - mongo
+  client:
+    container_name: airbnb-client
+    build: ./client
+    ports:
+      - 5173:5173
+    volumes:
+      - ./client:/usr/src/app
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
